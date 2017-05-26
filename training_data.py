@@ -5,9 +5,9 @@ import numpy as np
 import random
 import os.path
 
-num_patients = 2
-num_samples = 500
-patch_size = 5
+num_patients = 10
+num_samples = 200
+patch_size = 7
 
 #feature = dicom.read_file("LesionDataset/1/Features/IM-0001-0014-0001.dcm") #sys.argv[1]
 #label = dicom.read_file("LesionDataset/1/Labels/IM-0001-0014-0001.dcm")
@@ -86,8 +86,9 @@ for n in range(1, num_patients+1):
             else:
                 y_col.append(0)
 
-print(x_col)
-print(y_col)
+#print(x_col)
+#print(y_col)
+print("Finished training.")
 
 
 
