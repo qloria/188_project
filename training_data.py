@@ -6,12 +6,12 @@ import random
 import os.path
 
 num_patients = 10
-num_samples = 200
-patch_size = 7
+num_samples = 2000
+patch_size = 17
 
 #feature = dicom.read_file("LesionDataset/1/Features/IM-0001-0014-0001.dcm") #sys.argv[1]
 #label = dicom.read_file("LesionDataset/1/Labels/IM-0001-0014-0001.dcm")
-#pylab.imshow(ds.pixel_array, cmap=pylab.cm.bone)
+#pylab.imshow(feature.pixel_array, cmap=pylab.cm.bone)
 #pylab.show()
 
 x_col = []
@@ -62,33 +62,68 @@ for n in range(1, num_patients+1):
 
             cur_r = r_coords[i]
             cur_c = c_coords[i]
-            
-            # Create patch and push into x column
-            patch = []
-            offset = (patch_size-1)/2
-            for r in range(-offset, offset+1):
-                for c in range(-offset, offset+1):
-                    offset_r = cur_r+r
-                    offset_c = cur_c+c
-
-                    # Check if pixel out of bounds
-                    if offset_r < 0 or offset_r > height-1:
-                        offset_r = cur_r;
-                    if offset_c < 0 or offset_c > width-1:
-                        offset_c = cur_c;
-
-                    patch.append(image[offset_r][offset_c])
-            x_col.append(patch)
 
             # Create y column of training table
             if labels_image[cur_r][cur_c] == 5000:
                 y_col.append(1)
-            else:
-                y_col.append(0)
+
+                # Create patch and push into x column
+                patch = []
+                offset = (patch_size-1)/2
+                for r in range(-offset, offset+1):
+                    for c in range(-offset, offset+1):
+                        offset_r = cur_r+r
+                        offset_c = cur_c+c
+
+                        # Check if pixel out of bounds
+                        if offset_r < 0 or offset_r > height-1:
+                            offset_r = cur_r;
+                        if offset_c < 0 or offset_c > width-1:
+                            offset_c = cur_c;
+
+                        patch.append(image[offset_r][offset_c])
+                x_col.append(patch)
+
+                zero_count = 0
+                for j in range(i, num_samples):
+                    r_coords.append(random.randint(0, height-1))
+                    c_coords.append(random.randint(0, width-1))
+                    cur_r = r_coords[j]
+                    cur_c = c_coords[j]
+                    if labels_image[cur_r][cur_c] != 5000:
+                        y_col.append(0)
+                        zero_count += 1
+
+                        patch = []
+                        offset = (patch_size-1)/2
+                        for r in range(-offset, offset+1):
+                            for c in range(-offset, offset+1):
+                                offset_r = cur_r+r
+                                offset_c = cur_c+c
+
+                                # Check if pixel out of bounds
+                                if offset_r < 0 or offset_r > height-1:
+                                    offset_r = cur_r;
+                                if offset_c < 0 or offset_c > width-1:
+                                    offset_c = cur_c;
+
+                                patch.append(image[offset_r][offset_c])
+                        x_col.append(patch)
+                        if (zero_count == 5):
+                            break
+
+
+
+           # else:
+             #   y_col.append(0)
+            
+            
+
+         
 
 #print(x_col)
 #print(y_col)
-print("Finished training.")
+print("Finished creating training data.")
 
 
 
