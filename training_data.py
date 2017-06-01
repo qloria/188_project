@@ -5,9 +5,9 @@ import numpy as np
 import random
 import os.path
 
-num_patients = 10
-num_samples = 2000
-patch_size = 17
+num_patients = 11
+num_samples = 1000
+patch_size = 13
 
 #feature = dicom.read_file("LesionDataset/1/Features/IM-0001-0014-0001.dcm") #sys.argv[1]
 #label = dicom.read_file("LesionDataset/1/Labels/IM-0001-0014-0001.dcm")
@@ -17,7 +17,9 @@ patch_size = 17
 x_col = []
 y_col = []
 
-# iterate through patients
+
+#for t in range(1, num_patients+1) #testing patient
+    # iterate through patients
 for n in range(1, num_patients+1):
     file_name1 = "LesionDataset/"
     file_name2 = str(n)
@@ -110,16 +112,11 @@ for n in range(1, num_patients+1):
                                 patch.append(image[offset_r][offset_c])
                         x_col.append(patch)
                         if (zero_count == 5):
-                            break
-
-
-
-           # else:
-             #   y_col.append(0)
-            
-            
+                            break            
+        
 
          
+
 
 #print(x_col)
 #print(y_col)

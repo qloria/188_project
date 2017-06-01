@@ -7,7 +7,7 @@ import os.path
 
 np.set_printoptions(threshold='nan')
 
-patch_size = 17
+patch_size = 13
 
 #feature = dicom.read_file("LesionDataset/11/Features/IM-0001-0012-0001.dcm") #sys.argv[1]
 #label = dicom.read_file("LesionDataset/11/Labels/IM-0001-0012-0001.dcm")
@@ -57,10 +57,10 @@ for n in range(12, 13):
         for cur_r in range(0, height):
             for cur_c in range(0, width):
 
-                #if labels_image[cur_r][cur_c] == 5000:
-                 #   y_col.append(1)
-                if labels_image[cur_r][cur_c] != 5000:
-                    y_col.append(0)
+                if labels_image[cur_r][cur_c] == 5000:
+                    y_col.append(1)
+                #if labels_image[cur_r][cur_c] != 5000:
+                #    y_col.append(0)
 
                     patch = []
                     offset = (patch_size-1)/2
