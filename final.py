@@ -16,7 +16,7 @@ from sklearn.ensemble import RandomForestClassifier
 np.set_printoptions(threshold='nan')
 
 num_patients = 12
-num_samples = 100 # actual sample size may vary
+num_samples = 500 # actual sample size may vary
 patch_size = 9
 
 #feature = dicom.read_file("LesionDataset/1/Features/IM-0001-0014-0001.dcm") #sys.argv[1]
@@ -24,16 +24,17 @@ patch_size = 9
 #pylab.imshow(feature.pixel_array, cmap=pylab.cm.bone)
 #pylab.show()
 
-# x_col holds patches and y_col holds the corresponding label value (0,1)
-
-
 avg_overall = 0
 avg_zero = 0
 avg_one = 0
+print(patch_size)
 for t in range(1, num_patients+1): # use as testing patient
+    # x_col holds patches and y_col holds the corresponding label value (0,1)
     x_col = []
     y_col = []
-    #t = 6
+
+    t = 9 #select a specific patient to test on, comment out to loop through all patients
+
     # iterate through patients to create training table
     for n in range(1, num_patients+1):
         if n == t: # skip the testing patient
@@ -48,7 +49,7 @@ for t in range(1, num_patients+1): # use as testing patient
         num_files = len([f for f in os.listdir(path)
                     if os.path.isfile(os.path.join(path, f))])
 
-        # Iterate through each image (image 10-24 are the only ones to have a marked lesion area)
+        # Iterate through each image (image 10-23 are the only ones to have a marked lesion area)
         for m in range(10, 24):
             # Create file path and read in the image
             file_name4 = "IM-0001-00"
@@ -164,13 +165,14 @@ for t in range(1, num_patients+1): # use as testing patient
             testing_x_col.append(patch)
     print("Finished compiling testing set on patient "+str(t))
 
+    
     #clf = KernelRidge(alpha=1.0)
     #clf = linear_model.Ridge (alpha = .5)
-    #clf = svm.SVC(gamma=0.00000001)
+    #clf = svm.SVC(gamma=0.000001) #0.000001
     #clf = tree.DecisionTreeClassifier()
-    clf = AdaBoostClassifier(n_estimators=100)
-    #clf = RandomForestClassifier(n_estimators=10)
-    clf.fit(testing_x_col, testing_y_col)
+    #clf = AdaBoostClassifier(n_estimators=100) #1:1 ratio
+    clf = RandomForestClassifier(n_estimators=10)
+    clf.fit(x_col, y_col)
     print("Finished fitting data.")
 
     prediction = clf.predict(testing_x_col)
@@ -182,6 +184,16 @@ for t in range(1, num_patients+1): # use as testing patient
     total_ones = 0
     count_zeroes = 0
     total_zeroes = 0
+
+    '''
+    # for linear methods, set threshold
+    for i in range(0, len(prediction)):
+        if prediction[i] > .1:
+            prediction[i] = 1
+        else:
+            prediction[i] = 0
+    '''
+
     for i in range(0, len(prediction)):
         total = total + 1
         if prediction[i] == testing_y_col[i]:
@@ -210,10 +222,13 @@ for t in range(1, num_patients+1): # use as testing patient
     #print(prediction)
     #print("Expected outcome:")
     #print(testing_data.y_col)
-    print("Accuracy overall: "+str(float(count)/total))
-    print("Accuracy 1s: "+str(float(count_ones)/total_ones))
-    print("Accuracy 0s: "+str(float(count_zeroes)/total_zeroes))
-    print()
+    print("Accuracy overall: ")
+    print(str(float(count)/total))
+    print("Accuracy 1s: ")
+    print(str(float(count_ones)/total_ones))
+    print("Accuracy 0s: ")
+    print(str(float(count_zeroes)/total_zeroes))
+    print("-----------")
 
 print("Avg overall: "+str(avg_overall/12))
 print("Avg 1s: "+str(avg_one/12))
